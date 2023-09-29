@@ -1,35 +1,35 @@
+from typing import List
 from pydantic import BaseModel
 
+class TagBase(BaseModel):
+    name: str
 
-class ItemBase(BaseModel):
-    title: str
-    description: str | None = None
-
-
-class ItemCreate(ItemBase):
-    pass
-
-
-class Item(ItemBase):
+class Tag(TagBase):
     id: int
-    owner_id: int
+    cards: list["Card"] = []
 
     class Config:
         orm_mode = True
 
+class CardBase(BaseModel):
+    name: int
+    rarity: int
 
-class UserBase(BaseModel):
-    email: str
-
-
-class UserCreate(UserBase):
-    password: str
-
-
-class User(UserBase):
+class Card(CardBase):
     id: int
-    is_active: bool
-    items: list[Item] = []
+    tags: list["Tag"] = []
+    upgrades: list["CardUpgrade"] = []
+    upgrade_requirements: list["CardUpgrade"] = []
 
+    class Config:
+        orm_mode = True
+
+class CardUpgradeBase(BaseModel):
+    card: "Card"
+    amount: int
+    requirement: "Card"
+
+class CardUpgrade(CardUpgradeBase):
+    
     class Config:
         orm_mode = True

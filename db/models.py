@@ -37,13 +37,14 @@ class Tag(Base):
     __tablename__ = "tag"
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
     name: Mapped[str] = mapped_column()
+    cards: Mapped[List["Card"]] = relationship(secondary=card_has_tags, back_populates="tags")
 
 class Card(Base):
     __tablename__ = "card"
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
     name: Mapped[int] = mapped_column(index=True, unique=True)
     rarity: Mapped[int] = mapped_column(nullable=False)
-    tags: Mapped[List[Tag]] = relationship(secondary=card_has_tags)
+    tags: Mapped[List[Tag]] = relationship(secondary=card_has_tags, back_populates="cards")
     upgrades: Mapped[List["CardUpgrade"]] = relationship(back_populates="card")
     upgrade_requirements: Mapped[List["CardUpgrade"]] = relationship(back_populates="requirement")
     

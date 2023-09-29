@@ -42,7 +42,7 @@ class Tag(Base):
 class Card(Base):
     __tablename__ = "card"
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
-    name: Mapped[int] = mapped_column(index=True, unique=True)
+    name: Mapped[str] = mapped_column(index=True, unique=True)
     rarity: Mapped[int] = mapped_column(nullable=False)
     tags: Mapped[List[Tag]] = relationship(secondary=card_has_tags, back_populates="cards")
     upgrades: Mapped[List["CardUpgrade"]] = relationship(back_populates="card", foreign_keys="CardUpgrade.card_id")
@@ -50,7 +50,7 @@ class Card(Base):
     
 class Player(Base):
     __tablename__ = "player"
-    discord_id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
+    discord_id: Mapped[str] = mapped_column(primary_key=True, index=True)
     balance: Mapped[int] = mapped_column(default=0)
     last_daily: Mapped[datetime.datetime] = mapped_column(DateTime)
     daily_streak: Mapped[int] = mapped_column(Integer, default=0)

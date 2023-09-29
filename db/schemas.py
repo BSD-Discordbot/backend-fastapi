@@ -1,35 +1,52 @@
+from datetime import datetime
 from typing import List
 from pydantic import BaseModel
+
+class PlayerBase(BaseModel):
+    discord_id: str
+
+class PlayerList(PlayerBase):
+    balance: int
+    last_daily: datetime
+    daily_streak: int
+
+class Player(PlayerList):
+    cards: List['Card'] = []
+
+    class Config:
+        from_attributes = True
 
 class TagBase(BaseModel):
     name: str
 
-class Tag(TagBase):
+class TagList(TagBase):
     id: int
-    cards: list["Card"] = []
+
+class Tag(TagList):
+    id: int
+    cards: List['Card'] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
 
 class CardBase(BaseModel):
-    name: int
+    name: str
     rarity: int
 
-class Card(CardBase):
+class CardList(CardBase):
     id: int
-    tags: list["Tag"] = []
-    upgrades: list["CardUpgrade"] = []
-    upgrade_requirements: list["CardUpgrade"] = []
+    tags: List[Tag] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+class Card(CardList):
+    upgrades: List["CardUpgrade"] = []
 
 class CardUpgradeBase(BaseModel):
-    card: "Card"
     amount: int
-    requirement: "Card"
+    requirement: Card
 
 class CardUpgrade(CardUpgradeBase):
-    
-    class Config:
-        orm_mode = True
+    pass

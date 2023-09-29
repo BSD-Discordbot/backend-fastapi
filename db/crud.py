@@ -2,35 +2,34 @@ from sqlalchemy.orm import Session
 
 from . import models, schemas
 
+def get_all_cards(db: Session):
+    return db.query(models.Card).all()
 
-def get_user(db: Session, user_id: int):
-    return db.query(models.User).filter(models.User.id == user_id).first()
-
-
-def get_user_by_email(db: Session, email: str):
-    return db.query(models.User).filter(models.User.email == email).first()
-
-
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.User).offset(skip).limit(limit).all()
-
-
-def create_user(db: Session, user: schemas.UserCreate):
-    fake_hashed_password = user.password + "notreallyhashed"
-    db_user = models.User(email=user.email, hashed_password=fake_hashed_password)
-    db.add(db_user)
+def create_card(db: Session, card: schemas.CardBase):
+    db_card = models.Card(**card)
+    db.add(db_card)
     db.commit()
-    db.refresh(db_user)
-    return db_user
+    db.refresh(db_card)
+    return db_card
 
+def delete_card(db: Session, id: int):
+    db.query(models.Card).filter(models.Card.id == id).delete()
 
-def get_items(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Item).offset(skip).limit(limit).all()
+def get_all_tags(db: Session):
+    return db.query(models.Tag).all()
 
-
-def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
-    db_item = models.Item(**item.dict(), owner_id=user_id)
-    db.add(db_item)
+def create_tag(db: Session, tag: schemas.TagBase):
+    db_tag = models.Tag(**tag)
+    db.add(db_tag)
     db.commit()
-    db.refresh(db_item)
-    return db_item
+    db.refresh(db_tag)
+    return db_tag
+
+def delete_tag(db: Session, id: int):
+    db.query(models.Tag).filter(models.Tag.id == id).delete()
+
+def get_all_players(db: Session):
+    return db.query(models.Player).all()
+
+def get_player(db: Session, player_id: str):
+    return db.query(models.Player).filter(models.Player.discord_id == player_id).first()

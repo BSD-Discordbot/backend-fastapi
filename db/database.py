@@ -5,9 +5,6 @@ from sqlalchemy.orm import sessionmaker
 import re
 import os
 
-from alembic import context
-config = context.config
-
 url_tokens = {
         "DB_USER": os.getenv("DB_USER", ""),
         "DB_PASS": os.getenv("DB_PASS", ""),
@@ -15,7 +12,7 @@ url_tokens = {
         "DB_NAME": os.getenv("DB_NAME", "")
     }
 
-url = config.get_main_option("sqlalchemy.url")
+url = 'postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}'
 
 url = re.sub(r"\${(.+?)}", lambda m: url_tokens[m.group(1)], url)
 

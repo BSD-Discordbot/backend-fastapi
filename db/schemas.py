@@ -19,25 +19,26 @@ class Player(PlayerList):
 class TagBase(BaseModel):
     name: str
 
+    class Config:
+        from_attributes = True
+
 class TagList(TagBase):
     id: int
+    name: str
 
 class Tag(TagList):
-    id: int
     cards: List['Card'] = []
 
     class Config:
         from_attributes = True
 
-
 class CardBase(BaseModel):
     name: str
     rarity: int
+    tags: List[TagList] = []
 
 class CardList(CardBase):
     id: int
-    tags: List[Tag] = []
-
     class Config:
         from_attributes = True
 

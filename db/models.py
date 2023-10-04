@@ -44,7 +44,7 @@ class Card(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
     name: Mapped[str] = mapped_column(index=True, unique=True)
     rarity: Mapped[int] = mapped_column(nullable=False)
-    image: Mapped[bytes] = mapped_column(LargeBinary, deferred=True)
+    image: Mapped[bytes] = mapped_column(LargeBinary, deferred=True, nullable=True)
     tags: Mapped[List[Tag]] = relationship(secondary=card_has_tags, back_populates="cards")
     upgrades: Mapped[List["CardUpgrade"]] = relationship(back_populates="card", foreign_keys="CardUpgrade.card_id")
     upgrade_requirements: Mapped[List["CardUpgrade"]] = relationship(back_populates="requirement", foreign_keys="CardUpgrade.requirement_id")

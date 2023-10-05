@@ -37,7 +37,7 @@ def get_card(db: Session, name: str):
 def set_card_image(db: Session, name: str, image: bytes):
     card = get_card(db, name)
     setattr(card, 'image', image)
-    db.commit()
+    return db.commit()
 
 def get_all_tags(db: Session):
     return db.query(models.Tag).all()
@@ -54,11 +54,42 @@ def create_tag(db: Session, tag: schemas.TagBase):
 
 def delete_tag(db: Session, id: int):
     tag = get_tag(db, id)
-    db.delete(tag)
-    return db.commit()
+    if(tag != None):
+        db.delete(tag)
+        return db.commit()
 
 def get_all_players(db: Session):
     return db.query(models.Player).all()
 
 def get_player(db: Session, player_id: str):
     return db.query(models.Player).filter(models.Player.discord_id == player_id).first()
+
+def get_all_events(db: Session):
+    return db.query(models.Event).all()
+
+def get_event(db: Session, id: int):
+    return db.query(models.Event).filter(models.Event.id == id).first()
+
+def create_event(db: Session, event: schemas.EventBase):
+    db_event = models.Event()
+    db.add(db_event)
+    db_event = update_event(db, event, db_event)
+    return db_event
+
+def update_event(db: Session, event: schemas.EventBase, db_event: models.Event):
+    db_event.cards.clear()
+    for card in event.cards_names:
+        db_event.cards.append(get_card(db, card))
+    db_event.default = event.default
+    db_event.start_time = event.start_time
+    db_event.end_time = event.end_time
+    db_event.name = event.name
+    db.commit()
+    db.refresh(db_event)
+    return db_event
+
+def delete_event(db: Session, id: int):
+    event = get_event(db, id)
+    if(event != None):
+        db.delete(event)
+        db.commit()

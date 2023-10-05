@@ -83,3 +83,5 @@ class Event(Base):
     name: Mapped[str] = mapped_column(unique=True, nullable=False)
     default: Mapped[bool] = mapped_column(nullable=False, default=False)
     cards: Mapped[List[Card]] = relationship(secondary=event_has_cards)
+    def cards_names(self):
+        return list(map(lambda t: t.id, object_session(self).query(Card).with_parent(self).add_column(column=Card.name)))

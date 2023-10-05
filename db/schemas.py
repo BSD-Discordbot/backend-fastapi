@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 
 class PlayerBase(BaseModel):
@@ -48,4 +48,17 @@ class CardBase(BaseModel):
         from_attributes = True
 
 class Card(CardBase):
+    id: int
+
+
+class EventBase(BaseModel):
+    name: str
+    default: Optional[bool] = False
+    start_time: Optional[datetime]
+    end_time: Optional[datetime]
+    cards_names: List[str] = []
+    class Config:
+        from_attributes = True
+
+class Event(EventBase):
     id: int

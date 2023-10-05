@@ -8,35 +8,35 @@ def get_all_cards(db: Session):
     return cards
 
 def create_card(db: Session, card: schemas.CardBase):
-    db_card = models.Card(**card)
-    db_card = update_card(db, card, db_card)
+    db_card = models.Card(name=card.name, rarity=card.rarity)
     db.add(db_card)
-    db.commit()
-    db.refresh(db_card)
+    update_card(db, card, db_card)
     return db_card
 
-def update_card(db: Session, card: schemas.Card, db_card: models.Card):
+def update_card(db: Session, card: schemas.CardBase, db_card: models.Card):
     db_card.tags.clear()
-    for tag in card.tags:
+    for tag in card.tags_ids:
         db_card.tags.append(get_tag(db, tag))
     db_card.upgrades.clear()
     for upgrade in card.upgrades:
-        db_card.upgrades.append(models.CardUpgrade(amount=upgrade.amount, card=db_card, requirement=get_card(db, card.id)))
+        db_card.upgrades.append(models.CardUpgrade(amount=upgrade.amount, card=db_card, requirement=get_card(db, card.name)))
     db.commit()
     db.refresh(db_card)
     return db_card
 
-def delete_card(db: Session, id: int):
-    card = get_card(db, id)
-    db.delete(card)
-    return db.commit()
-
-def get_card(db: Session, id: int):
-    return db.query(models.Card).filter(models.Card.id == id).first()
-
-def set_card_image(db: Session, name: int, image: BinaryIO):
+def delete_card(db: Session, name: str):
     card = get_card(db, name)
-    card.image = image
+    if(card != None):
+        db.delete(card)
+        return db.commit()
+
+def get_card(db: Session, name: str):
+    card = db.query(models.Card).filter(models.Card.name == name).first()
+    return card
+
+def set_card_image(db: Session, name: str, image: bytes):
+    card = get_card(db, name)
+    setattr(card, 'image', image)
     db.commit()
 
 def get_all_tags(db: Session):

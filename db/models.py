@@ -4,7 +4,7 @@ from sqlalchemy import Column
 from sqlalchemy import Table
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, object_session
 import datetime
 from typing import List
 from typing import Optional
@@ -37,7 +37,7 @@ class Tag(Base):
     __tablename__ = "tag"
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
     name: Mapped[str] = mapped_column()
-    cards: Mapped[List["Card"]] = relationship(secondary=card_has_tags, back_populates="tags")
+    cards: Mapped[List["Card"]] = relationship(secondary=card_has_tags, back_populates="tags", lazy=True)
 
 class Card(Base):
     __tablename__ = "card"
@@ -46,6 +46,9 @@ class Card(Base):
     rarity: Mapped[int] = mapped_column(nullable=False)
     image: Mapped[bytes] = mapped_column(LargeBinary, deferred=True, nullable=True)
     tags: Mapped[List[Tag]] = relationship(secondary=card_has_tags, back_populates="cards")
+    @property
+    def tags_ids(self):
+        return list(map(lambda t: t.id, object_session(self).query(Tag).with_parent(self).add_column(column=Tag.id)))
     upgrades: Mapped[List["CardUpgrade"]] = relationship(back_populates="card", foreign_keys="CardUpgrade.card_id")
     upgrade_requirements: Mapped[List["CardUpgrade"]] = relationship(back_populates="requirement", foreign_keys="CardUpgrade.requirement_id")
     

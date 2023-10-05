@@ -42,9 +42,7 @@ class CardUpgrade(CardUpgradeBase):
 class CardBase(BaseModel):
     name: str
     rarity: int
-    tags: List[TagList] = []
-    def tags_ids(self) -> List[int]:
-        return [tag.id for tag in self.tags]
+    tags_ids: List[int] = []
     upgrades: List["CardUpgrade"] = []
     class Config:
         from_attributes = True

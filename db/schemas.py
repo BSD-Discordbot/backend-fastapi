@@ -54,11 +54,11 @@ class Card(CardBase):
 class EventBase(BaseModel):
     name: str
     default: Optional[bool] = False
-    start_time: Optional[datetime]
-    end_time: Optional[datetime]
-    cards_names: List[str] = []
+    start_time: Optional[datetime] = datetime.min
+    end_time: Optional[datetime] = datetime.max
     class Config:
         from_attributes = True
 
 class Event(EventBase):
     id: int
+    cards_names: Optional[List[str]] = []

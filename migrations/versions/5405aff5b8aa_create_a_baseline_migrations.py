@@ -1,8 +1,8 @@
 """Create a baseline migrations
 
-Revision ID: f5a3289290e4
+Revision ID: 5405aff5b8aa
 Revises: 
-Create Date: 2023-10-05 12:23:38.088802
+Create Date: 2023-10-05 17:40:42.260547
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'f5a3289290e4'
+revision: str = '5405aff5b8aa'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -56,8 +56,8 @@ def upgrade() -> None:
     op.create_table('card_has_tags',
     sa.Column('card', sa.Integer(), nullable=False),
     sa.Column('tag', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['card'], ['card.id'], ),
-    sa.ForeignKeyConstraint(['tag'], ['tag.id'], ),
+    sa.ForeignKeyConstraint(['card'], ['card.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['tag'], ['tag.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('card', 'tag')
     )
     op.create_table('card_upgrade',
@@ -72,16 +72,16 @@ def upgrade() -> None:
     op.create_table('event_has_cards',
     sa.Column('event', sa.Integer(), nullable=False),
     sa.Column('card', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['card'], ['card.id'], ),
-    sa.ForeignKeyConstraint(['event'], ['event.id'], ),
+    sa.ForeignKeyConstraint(['card'], ['card.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['event'], ['event.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('event', 'card')
     )
     op.create_table('player_has_cards',
     sa.Column('player', sa.String(), nullable=False),
     sa.Column('card', sa.Integer(), nullable=False),
     sa.Column('amount', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['card'], ['card.id'], ),
-    sa.ForeignKeyConstraint(['player'], ['player.discord_id'], ),
+    sa.ForeignKeyConstraint(['card'], ['card.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['player'], ['player.discord_id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('player', 'card', 'amount')
     )
     # ### end Alembic commands ###

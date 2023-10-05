@@ -14,23 +14,23 @@ from .database import Base
 player_has_cards = Table(
     "player_has_cards",
     Base.metadata,
-    Column("player", ForeignKey("player.discord_id"), primary_key=True),
-    Column("card", ForeignKey("card.id"), primary_key=True),
+    Column("player", ForeignKey("player.discord_id", ondelete="CASCADE"), primary_key=True),
+    Column("card", ForeignKey("card.id", ondelete="CASCADE"), primary_key=True),
     Column("amount", Integer, primary_key=True),
 )
 
 card_has_tags = Table(
     "card_has_tags",
     Base.metadata,
-    Column("card", ForeignKey("card.id"), primary_key=True),
-    Column("tag", ForeignKey("tag.id"), primary_key=True),
+    Column("card", ForeignKey("card.id", ondelete="CASCADE"), primary_key=True),
+    Column("tag", ForeignKey("tag.id", ondelete="CASCADE"), primary_key=True),
 )
 
 event_has_cards = Table(
     "event_has_cards",
     Base.metadata,
-    Column("event", ForeignKey("event.id"), primary_key=True),
-    Column("card", ForeignKey("card.id"), primary_key=True),
+    Column("event", ForeignKey("event.id", ondelete="CASCADE"), primary_key=True),
+    Column("card", ForeignKey("card.id", ondelete="CASCADE"), primary_key=True),
 )
 
 class Tag(Base):
@@ -51,6 +51,7 @@ class Card(Base):
         return list(map(lambda t: t.id, object_session(self).query(Tag).with_parent(self).add_column(column=Tag.id)))
     upgrades: Mapped[List["CardUpgrade"]] = relationship(back_populates="card", foreign_keys="CardUpgrade.card_id")
     upgrade_requirements: Mapped[List["CardUpgrade"]] = relationship(back_populates="requirement", foreign_keys="CardUpgrade.requirement_id")
+    events: Mapped[List["Event"]] = relationship(secondary=event_has_cards, back_populates="card")
     
 class Player(Base):
     __tablename__ = "player"
@@ -68,13 +69,6 @@ class CardUpgrade(Base):
     requirement_id: Mapped[int] = mapped_column(ForeignKey("card.id"), primary_key=True)
     requirement: Mapped["Card"] = relationship(back_populates="upgrade_requirements", foreign_keys="CardUpgrade.requirement_id")
 
-# interface Event {
-#   id: Generated<number>
-#   start_time?: number
-#   end_time?: number
-#   name: string
-#   default: boolean
-# }
 class Event(Base):
     __tablename__ = "event"
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
@@ -83,5 +77,6 @@ class Event(Base):
     name: Mapped[str] = mapped_column(unique=True, nullable=False)
     default: Mapped[bool] = mapped_column(nullable=False, default=False)
     cards: Mapped[List[Card]] = relationship(secondary=event_has_cards)
+    @property
     def cards_names(self):
         return list(map(lambda t: t.id, object_session(self).query(Card).with_parent(self).add_column(column=Card.name)))

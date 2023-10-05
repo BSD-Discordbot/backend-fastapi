@@ -78,8 +78,8 @@ def create_event(db: Session, event: schemas.EventBase):
 
 def update_event(db: Session, event: schemas.EventBase, db_event: models.Event):
     db_event.cards.clear()
-    for card in event.cards_names:
-        db_event.cards.append(get_card(db, card))
+    # for card in event.cards_names:
+        # db_event.cards.append(get_card(db, card))
     db_event.default = event.default
     db_event.start_time = event.start_time
     db_event.end_time = event.end_time

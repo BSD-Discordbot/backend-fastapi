@@ -10,13 +10,13 @@ router = APIRouter()
 
 @router.get("/events", response_model=list[schemas.Event], tags=['events'])
 def read_all_events(db: Session = Depends(get_db)):
-    tags = crud.get_all_events(db)
-    return tags
+    events = crud.get_all_events(db)
+    return events
 
 @router.post('/events', response_model=schemas.Event, tags=['events'])
 def create_event(event: schemas.EventBase, db: Session = Depends(get_db)):
-    db_tag = crud.create_event(db, event)
-    return db_tag
+    db_event = crud.create_event(db, event)
+    return db_event
 
 @router.put('/events/{event_id}', response_model=schemas.Event, tags=['events'])
 def update_event(event_id: int, event: schemas.EventBase, db: Session = Depends(get_db)):

@@ -13,17 +13,18 @@ def read_all_cards(db: Session = Depends(get_db)):
     cards = crud.get_all_cards(db)
     return cards
 
-@router.post('/cards/{card_id}', response_model=schemas.CardList)
+@router.post('/cards/{card_id}', response_model=schemas.CardBase)
 def create_card(card: schemas.CardBase, db: Session = Depends(get_db)):
     db_card = crud.create_card(db, card)
     return db_card
 
-@router.put('/cards/{card_id}', response_model=schemas.CardList)
-def update_card(card: schemas.CardBase, db: Session = Depends(get_db)):
-    db_card = crud.update_card(db, card)
+@router.put('/cards/{card_id}', response_model=schemas.CardBase)
+def update_card(card: schemas.Card, db: Session = Depends(get_db)):
+    db_card = crud.get_card(db, card.id)
+    db_card = crud.update_card(db, card, db_card)
     return db_card
 
-@router.get('/cards/{card_id}', response_model=schemas.CardList)
+@router.get('/cards/{card_id}', response_model=schemas.CardBase)
 def read_card(card_id: str, db: Session = Depends(get_db)):
     db_card = crud.get_card(db, card_id)
     return db_card

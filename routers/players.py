@@ -13,7 +13,7 @@ def read_all_players(db: Session = Depends(get_db)):
     players = crud.get_all_players(db)
     return players
 
-@router.get("/players/{player_id}/cards", response_model=list[schemas.CardList])
+@router.get("/players/{player_id}/cards", response_model=list[schemas.Card])
 def read_player_cards(player_id: str, db: Session = Depends(get_db)):
     db_user = crud.get_player(db, player_id)
     if db_user is None:

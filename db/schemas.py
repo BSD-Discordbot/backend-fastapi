@@ -32,22 +32,22 @@ class Tag(TagList):
     class Config:
         from_attributes = True
 
+class CardUpgradeBase(BaseModel):
+    amount: int
+    requirement: int
+
+class CardUpgrade(CardUpgradeBase):
+    pass
+
 class CardBase(BaseModel):
     name: str
     rarity: int
     tags: List[TagList] = []
-
-class CardList(CardBase):
-    id: int
+    def tags_ids(self) -> List[int]:
+        return [tag.id for tag in self.tags]
+    upgrades: List["CardUpgrade"] = []
     class Config:
         from_attributes = True
 
-class Card(CardList):
-    upgrades: List["CardUpgrade"] = []
-
-class CardUpgradeBase(BaseModel):
-    amount: int
-    requirement: Card
-
-class CardUpgrade(CardUpgradeBase):
-    pass
+class Card(CardBase):
+    id: int

@@ -9,27 +9,30 @@ def get_all_cards(db: Session):
 
 def create_card(db: Session, card: schemas.CardBase):
     db_card = models.Card(**card)
+    db_card = update_card(db, card, db_card)
     db.add(db_card)
     db.commit()
     db.refresh(db_card)
     return db_card
 
-def update_card(db: Session, card: schemas.CardBase):
-    db_card = get_card(db, card.name)
+def update_card(db: Session, card: schemas.Card, db_card: models.Card):
     db_card.tags.clear()
     for tag in card.tags:
-        db_card.tags.append(get_tag(db, tag.id))
+        db_card.tags.append(get_tag(db, tag))
+    db_card.upgrades.clear()
+    for upgrade in card.upgrades:
+        db_card.upgrades.append(models.CardUpgrade(amount=upgrade.amount, card=db_card, requirement=get_card(db, card.id)))
     db.commit()
     db.refresh(db_card)
     return db_card
 
-def delete_card(db: Session, name: str):
-    card = get_card(db, name)
+def delete_card(db: Session, id: int):
+    card = get_card(db, id)
     db.delete(card)
     return db.commit()
 
-def get_card(db: Session, name: str):
-    return db.query(models.Card).filter(models.Card.name == name).first()
+def get_card(db: Session, id: int):
+    return db.query(models.Card).filter(models.Card.id == id).first()
 
 def set_card_image(db: Session, name: int, image: BinaryIO):
     card = get_card(db, name)

@@ -1,8 +1,8 @@
 """Create a baseline migrations
 
-Revision ID: a871659a83bb
+Revision ID: f5a3289290e4
 Revises: 
-Create Date: 2023-09-29 18:31:55.621462
+Create Date: 2023-10-05 12:23:38.088802
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'a871659a83bb'
+revision: str = 'f5a3289290e4'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,7 +24,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('name', sa.String(), nullable=False),
     sa.Column('rarity', sa.Integer(), nullable=False),
-    sa.Column('image', sa.LargeBinary(), nullable=False),
+    sa.Column('image', sa.LargeBinary(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_card_id'), 'card', ['id'], unique=False)

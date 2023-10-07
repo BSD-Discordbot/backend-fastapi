@@ -20,6 +20,8 @@ def update_card(db: Session, card: schemas.CardBase, db_card: models.Card):
     db_card.upgrades.clear()
     for upgrade in card.upgrades:
         db_card.upgrades.append(models.CardUpgrade(amount=upgrade.amount, card=db_card, requirement=get_card(db, card.name)))
+    for event in card.events_ids:
+        db_card.events.append(get_event(db, event))
     db.commit()
     db.refresh(db_card)
     return db_card

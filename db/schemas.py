@@ -43,6 +43,7 @@ class CardBase(BaseModel):
     name: str
     rarity: int
     tags_ids: List[int] = []
+    events_ids: List[int] = []
     upgrades: List["CardUpgrade"] = []
     class Config:
         from_attributes = True
@@ -56,9 +57,10 @@ class EventBase(BaseModel):
     default: Optional[bool] = False
     start_time: Optional[datetime] = datetime.min
     end_time: Optional[datetime] = datetime.max
+    
     class Config:
         from_attributes = True
 
 class Event(EventBase):
+    # cards_names: Optional[List[str]] = []
     id: int
-    cards_names: Optional[List[str]] = []

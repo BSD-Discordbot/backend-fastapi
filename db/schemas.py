@@ -34,7 +34,7 @@ class Tag(TagList):
 
 class CardUpgradeBase(BaseModel):
     amount: int
-    requirement: int
+    requirement_name: str
 
 class CardUpgrade(CardUpgradeBase):
     pass

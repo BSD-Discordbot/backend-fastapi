@@ -49,7 +49,7 @@ class Card(Base):
     @property
     def tags_ids(self):
         return list(map(lambda t: t.id, object_session(self).query(Tag).with_parent(self).add_column(column=Tag.id)))
-    upgrades: Mapped[List["CardUpgrade"]] = relationship(back_populates="card", foreign_keys="CardUpgrade.card_id")
+    upgrades: Mapped[List["CardUpgrade"]] = relationship(back_populates="card", foreign_keys="CardUpgrade.card_id", cascade="save-update, merge, delete, delete-orphan")
     upgrade_requirements: Mapped[List["CardUpgrade"]] = relationship(back_populates="requirement", foreign_keys="CardUpgrade.requirement_id")
     events: Mapped[List["Event"]] = relationship(secondary=event_has_cards, back_populates="cards")
     @property
@@ -71,6 +71,9 @@ class CardUpgrade(Base):
     amount: Mapped[int] = mapped_column(default=1)
     requirement_id: Mapped[int] = mapped_column(ForeignKey("card.id"), primary_key=True)
     requirement: Mapped["Card"] = relationship(back_populates="upgrade_requirements", foreign_keys="CardUpgrade.requirement_id")
+    @property
+    def requirement_name(self):
+        return self.requirement.name
 
 class Event(Base):
     __tablename__ = "event"

@@ -19,7 +19,8 @@ def update_card(db: Session, card: schemas.CardBase, db_card: models.Card):
         db_card.tags.append(get_tag(db, tag))
     db_card.upgrades.clear()
     for upgrade in card.upgrades:
-        db_card.upgrades.append(models.CardUpgrade(amount=upgrade.amount, card=db_card, requirement=get_card(db, card.name)))
+        db_upgrade = models.CardUpgrade(amount=upgrade.amount, card_id=db_card.id, card=db_card, requirement=get_card(db, upgrade.requirement_name), requirement_id=upgrade.requirement_name)
+        db_card.upgrades.append(db_upgrade)
     for event in card.events_ids:
         db_card.events.append(get_event(db, event))
     db.commit()

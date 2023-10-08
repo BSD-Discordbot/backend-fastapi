@@ -16,7 +16,11 @@
         "DB_USER": "BSD",
         "DB_PASS": "bonjour",
         "DB_HOST": "localhost",
-        "DB_NAME": "BSD"
+        "DB_NAME": "BSD",
+        "API_URL": "http://localhost:8000/login",
+        "FRONT_URL": "http://localhost:5173",
+        "DISCORD_CLIENT_ID": "460020057867681792",
+        "DISCORD_CLIENT_SECRET": "K9isARp75UGATpfA7sJ9S5dKscZDqqGr"
       }
     },
   ]

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response, UploadFile
 from sqlalchemy.orm import Session
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, HTTPException
 
 from dependencies import get_db
 

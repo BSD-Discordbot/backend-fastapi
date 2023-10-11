@@ -64,4 +64,6 @@ def me(request: Request):
     if(token == None):
         raise HTTPException(status_code=401, detail="User not authentified")
     userinfo = requests.get('https://discord.com/api/users/@me', headers={'Authorization': 'Bearer '+token})
-    return userinfo.json()
+    data = userinfo.json()
+    data['isAdmin'] = data['id'] == '268494575780233216'
+    return data

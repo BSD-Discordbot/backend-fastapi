@@ -2,11 +2,27 @@ from fastapi import APIRouter, Response, UploadFile
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException
 
+from PIL import Image
+from io import BytesIO
+
 from dependencies import get_db
 
 from db import crud, schemas
 
+from db.database import SessionLocal
+
 router = APIRouter()
+
+cards = crud.get_all_cards(SessionLocal())
+cards.sort(key=lambda c: c.name)
+atlas = Image.new('RGB', (cards.__len__()*288, 450))
+for index, card in enumerate(cards):
+    if(card.image != None):
+        img = Image.open(BytesIO(card.image)).resize((288, 450))
+        atlas.paste(img, (index*288, 0, (index+1)*288, 450))
+temp_io = BytesIO()
+atlas.save(temp_io, format="PNG")
+
 
 @router.get("/cards", response_model=list[schemas.CardBase], tags=['cards'])
 def read_all_cards(db: Session = Depends(get_db)):
@@ -49,3 +65,8 @@ def read_card_image(card_name: str, db: Session = Depends(get_db)):
 def delete_card(card_name: str, db: Session = Depends(get_db)):
     crud.delete_card(db, card_name)
     return
+
+@router.get('/atlas', response_model=bytes, tags=['cards'])
+def get_cards_atlas(db: Session= Depends(get_db)):
+
+    return Response(content=temp_io.getvalue(), media_type="image/png")

@@ -1,3 +1,4 @@
+import math
 from fastapi import APIRouter, Response, UploadFile
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException
@@ -15,11 +16,17 @@ router = APIRouter()
 
 cards = crud.get_all_cards(SessionLocal())
 cards.sort(key=lambda c: c.name)
-atlas = Image.new('RGB', (cards.__len__()*288, 450))
+
+nmbWidth = math.floor(math.sqrt(cards.__len__()))
+nmbheight = math.ceil(cards.__len__()/nmbWidth)
+
+atlas = Image.new('RGBA', (nmbWidth*288, nmbheight*450))
 for index, card in enumerate(cards):
     if(card.image != None):
+        x = (index%nmbWidth)*288
+        y = (math.floor(index/nmbWidth))*450
         img = Image.open(BytesIO(card.image)).resize((288, 450))
-        atlas.paste(img, (index*288, 0, (index+1)*288, 450))
+        atlas.paste(img, (x, y, x+288, y+450))
 temp_io = BytesIO()
 atlas.save(temp_io, format="PNG")
 

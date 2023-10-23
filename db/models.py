@@ -81,6 +81,7 @@ class Event(Base):
     start_time: Mapped[Optional[datetime.datetime]] = mapped_column()
     end_time: Mapped[Optional[datetime.datetime]] = mapped_column()
     name: Mapped[str] = mapped_column(unique=True, nullable=False)
+    description: Mapped[str] = mapped_column(unique=False, nullable=True)
     default: Mapped[bool] = mapped_column(nullable=False, default=False)
     cards: Mapped[List[Card]] = relationship(secondary=event_has_cards, back_populates='events')
     @property

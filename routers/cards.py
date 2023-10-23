@@ -14,22 +14,28 @@ from db.database import SessionLocal
 
 router = APIRouter()
 
-cards = crud.get_all_cards(SessionLocal())
-cards.sort(key=lambda c: c.name)
-
-nmbWidth = math.floor(math.sqrt(cards.__len__()))
-nmbheight = math.ceil(cards.__len__()/nmbWidth)
-
-atlas = Image.new('RGBA', (nmbWidth*288, nmbheight*450))
-for index, card in enumerate(cards):
-    if(card.image != None):
-        x = (index%nmbWidth)*288
-        y = (math.floor(index/nmbWidth))*450
-        img = Image.open(BytesIO(card.image)).resize((288, 450))
-        atlas.paste(img, (x, y, x+288, y+450))
 temp_io = BytesIO()
-atlas.save(temp_io, format="PNG")
 
+def generate_atlas(cards: list[schemas.Card]):
+    cards.sort(key=lambda c: c.name)
+    nmbWidth = math.floor(math.sqrt(cards.__len__()))
+    nmbheight = math.ceil(cards.__len__()/nmbWidth)
+
+    atlas = Image.new('RGBA', (nmbWidth*288, nmbheight*450))
+    for index, card in enumerate(cards):
+        if(card.image != None):
+            x = (index%nmbWidth)*288
+            y = (math.floor(index/nmbWidth))*450
+            img = Image.open(BytesIO(card.image)).resize((288, 450))
+            atlas.paste(img, (x, y, x+288, y+450))
+    atlas.save(temp_io, format="PNG")
+    print('Atlas Generated')
+
+cards = crud.get_all_cards(SessionLocal())
+if(cards.__len__() > 0):
+    generate_atlas(crud.get_all_cards(SessionLocal()))
+else:
+    print('No Atlas generated : no cards found')
 
 @router.get("/cards", response_model=list[schemas.CardBase], tags=['cards'])
 def read_all_cards(db: Session = Depends(get_db)):
@@ -75,5 +81,6 @@ def delete_card(card_name: str, db: Session = Depends(get_db)):
 
 @router.get('/atlas', response_model=bytes, tags=['cards'])
 def get_cards_atlas(db: Session= Depends(get_db)):
-
+    if(temp_io.tell() == 0):
+        raise HTTPException(status_code=404, detail="Atlas not generated")
     return Response(content=temp_io.getvalue(), media_type="image/png")

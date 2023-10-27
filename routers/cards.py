@@ -33,8 +33,7 @@ def generate_atlas(cards: list[schemas.Card]):
 
 cards = crud.get_all_cards(SessionLocal())
 if(cards.__len__() > 0):
-    # generate_atlas(crud.get_all_cards(SessionLocal()))
-    pass
+    generate_atlas(crud.get_all_cards(SessionLocal()))
 else:
     print('No Atlas generated : no cards found')
 

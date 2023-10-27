@@ -56,6 +56,7 @@ def login(request: Request, code: str):
     if(code == None):
         return RedirectResponse(url=os.getenv("FRONT_URL", ""))
     request.session['access_token'] = get_user_token(code)['access_token']
+    request.session['is_admin'] = me(request)['isAdmin']
     return RedirectResponse(url=os.getenv("FRONT_URL", ""))
 
 @app.get('/me')

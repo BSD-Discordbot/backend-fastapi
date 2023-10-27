@@ -1,12 +1,12 @@
 import math
-from fastapi import APIRouter, Response, UploadFile
+from fastapi import APIRouter, Request, Response, UploadFile
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException
 
 from PIL import Image
 from io import BytesIO
 
-from dependencies import get_db
+from dependencies import check_admin, get_db
 
 from db import crud, schemas
 
@@ -33,16 +33,17 @@ def generate_atlas(cards: list[schemas.Card]):
 
 cards = crud.get_all_cards(SessionLocal())
 if(cards.__len__() > 0):
-    generate_atlas(crud.get_all_cards(SessionLocal()))
+    # generate_atlas(crud.get_all_cards(SessionLocal()))
+    pass
 else:
     print('No Atlas generated : no cards found')
 
 @router.get("/cards", response_model=list[schemas.CardBase], tags=['cards'])
-def read_all_cards(db: Session = Depends(get_db)):
+def read_all_cards(request: Request, db: Session = Depends(get_db)):
     cards = crud.get_all_cards(db)
     return cards
 
-@router.put('/cards/{card_name}', response_model=schemas.CardBase, tags=['cards'])
+@router.put('/cards/{card_name}', response_model=schemas.CardBase, dependencies=[Depends(check_admin)], tags=['cards'])
 def create_or_update_card(card_name: str, card: schemas.CardBase, db: Session = Depends(get_db)):
     db_card = crud.get_card(db, card_name)
     if(db_card == None):
@@ -56,7 +57,7 @@ def read_card(card_name: str, db: Session = Depends(get_db)):
     db_card = crud.get_card(db, card_name)
     return db_card
 
-@router.put('/cards/{card_name}/image', tags=['cards'])
+@router.put('/cards/{card_name}/image', dependencies=[Depends(check_admin)], tags=['cards'])
 def set_card_image(card_name: str, file: UploadFile, db: Session = Depends(get_db)):
     card = crud.get_card(db, card_name)
     if(card == None):
@@ -74,7 +75,7 @@ def read_card_image(card_name: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Image not found")
     return Response(content=card.image, media_type="image/png")
 
-@router.delete('/cards/{card_name}', tags=['cards'])
+@router.delete('/cards/{card_name}', dependencies=[Depends(check_admin)] ,tags=['cards'])
 def delete_card(card_name: str, db: Session = Depends(get_db)):
     crud.delete_card(db, card_name)
     return

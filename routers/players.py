@@ -13,10 +13,9 @@ def read_all_players(db: Session = Depends(get_db)):
     players = crud.get_all_players(db)
     return players
 
-@router.get("/players/{player_id}/cards", response_model=list[schemas.Card], tags=['players'])
+@router.get("/players/{player_id}", response_model=schemas.Player, tags=['players'])
 def read_player_cards(player_id: str, db: Session = Depends(get_db)):
     db_user = crud.get_player(db, player_id)
     if db_user is None:
         raise HTTPException(status_code=400, detail="Player not found")
-    cards = db_user.cards
-    return cards
+    return db_user

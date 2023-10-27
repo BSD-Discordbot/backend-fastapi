@@ -30,10 +30,11 @@ def generate_atlas(cards: list[schemas.Card]):
             atlas.paste(img, (x, y, x+288, y+450))
     atlas.save(temp_io, format="PNG")
     print('Atlas Generated')
-
-cards = crud.get_all_cards(SessionLocal())
+db_temp = SessionLocal()
+cards = crud.get_all_cards(db_temp)
 if(cards.__len__() > 0):
-    generate_atlas(crud.get_all_cards(SessionLocal()))
+    generate_atlas(crud.get_all_cards(db_temp))
+    db_temp.close()
 else:
     print('No Atlas generated : no cards found')
 

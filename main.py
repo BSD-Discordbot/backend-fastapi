@@ -1,15 +1,12 @@
 
 import os
 import requests
-from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request
 from starlette.responses import RedirectResponse
-from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from routers import cards, players, tags, events
-
-from dependencies import get_db
 
 app = FastAPI()
 

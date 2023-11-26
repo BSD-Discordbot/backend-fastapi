@@ -6,6 +6,11 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+```bash
+git submodule init
+git submodule update
+```
+
 
 # Alembic (migrations)
 

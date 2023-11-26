@@ -38,13 +38,13 @@ if(cards.__len__() > 0):
 else:
     print('No Atlas generated : no cards found')
 
-@router.get("/cards", response_model=list[schemas.CardBase], tags=['cards'])
+@router.get("/cards", response_model=list[schemas.Card], tags=['cards'])
 def read_all_cards(request: Request, db: Session = Depends(get_db)):
     cards = crud.get_all_cards(db)
     return cards
 
-@router.put('/cards/{card_name}', response_model=schemas.CardBase, dependencies=[Depends(check_admin)], tags=['cards'])
-def create_or_update_card(card_name: str, card: schemas.CardBase, db: Session = Depends(get_db)):
+@router.put('/cards/{card_name}', response_model=schemas.Card, dependencies=[Depends(check_admin)], tags=['cards'])
+def create_or_update_card(card_name: str, card: schemas.Card, db: Session = Depends(get_db)):
     db_card = crud.get_card(db, card_name)
     if(db_card == None):
         db_card = crud.create_card(db, card)
@@ -52,7 +52,7 @@ def create_or_update_card(card_name: str, card: schemas.CardBase, db: Session = 
         db_card = crud.update_card(db, card, db_card)
     return db_card
 
-@router.get('/cards/{card_name}', response_model=schemas.CardBase, tags=['cards'])
+@router.get('/cards/{card_name}', response_model=schemas.Card, tags=['cards'])
 def read_card(card_name: str, db: Session = Depends(get_db)):
     db_card = crud.get_card(db, card_name)
     return db_card
